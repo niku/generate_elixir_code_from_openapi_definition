@@ -1,21 +1,53 @@
 # GenerateElixirCodeFromOpenapiDefinition
 
-**TODO: Add description**
+Generate an elixir code from OpenAPI definition.
 
-## Installation
+## Usage
 
-If [available in Hex](https://hex.pm/docs/publish), the package can be installed
-by adding `generate_elixir_code_from_openapi_definition` to your list of dependencies in `mix.exs`:
+```
+$ cat test/fixtures/simple.yaml
+swagger: "2.0"
+info:
+  version: "0.0.1"
+  title: "Minimal API Sepcification"
+paths:
+  /greetings/hello:
+    get:
+      operationId: "hello"
+      parameters: []
+      responses:
+        200:
+          description: "succeeded"
+          schema:
+            type: "string"
+            example: "hello"
+    post:
+      operationId: "hello with name"
+      parameters: []
+      responses:
+        200:
+          description: "succeeded"
+          schema:
+            type: "string"
+            example: "hello niku"
 
-```elixir
-def deps do
-  [
-    {:generate_elixir_code_from_openapi_definition, "~> 0.1.0"}
-  ]
+$ mix run -e 'IO.puts GenerateElixirCodeFromOpenapiDefinition.generate("test/fixtures/simple.yaml")'
+defmodule MyRouter do
+  use Plug.Router
+
+  plug :match
+  plug :dispatch
+
+  get "/greetings/hello" do
+    send_resp(conn, 200, "hello")
+  end
+
+  post "/greetings/hello" do
+    send_resp(conn, 200, "hello niku")
+  end
+
+  match _ do
+    send_resp(conn, 404, "oops")
+  end
 end
 ```
-
-Documentation can be generated with [ExDoc](https://github.com/elixir-lang/ex_doc)
-and published on [HexDocs](https://hexdocs.pm). Once published, the docs can
-be found at [https://hexdocs.pm/generate_elixir_code_from_openapi_definition](https://hexdocs.pm/generate_elixir_code_from_openapi_definition).
-
